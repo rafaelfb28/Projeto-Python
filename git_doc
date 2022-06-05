@@ -1,0 +1,50 @@
+Iniciando GIT.
+
+Git config:
+	#Lista minhas configurações GIT
+	git config --list
+	#Define meu nome nas configurações GIT
+	git config --global user.name "Rafael Ferreira Barros"
+	#Define meu email nas configurações GIT
+	git config --global user.email "rafaelfb28.rb@gmail.com"
+	#Define minha branch
+	git config --global init.defaultbranch main
+	#Adicionando excessão para diretorio, quando não estou logado com o dono da pasta
+	git config --global --add safe.directory /home/python/Projetos/cursopython
+
+Versionando
+	#Adicionando arquivo para ser versionado
+	git add "NOME DO ARQUIVO"
+	#Adicionando tudo
+	git add .
+	#Verificar o status do versionamento
+	git status
+	#Remover arquivo a ser versionado
+	git reset
+	#Fazendo commit do meu arquivo
+	git commit -m "DESCRIÇÃO DO SEU COMMIT"
+	#Log do versionamento
+	git log
+	#Voltar o commit ao estado anterior pelo ID
+	git checkout "ID"
+	#Voltar o commit ao estado atual
+	git checkout main
+	#Para ignorar arquivos que não serão versionados basta criar o arquivo .gitignore e
+	#adicionar os arquivos a serem ignorados dentro dele
+	#Criando uma branch(uma ramificação da linha do tempo)
+	git branch "NOME DA BRANCH"
+	#Listar branch's
+	git branch ou git branch -v
+	#Mudar de branch
+	git checkout "NOME DA BRANCH"
+	#Unificar branch's (Voltar para branch MAIN)
+	git merge "NOME DA BRANCH"	
+	#Deletar branch
+	git branch -d "NOME DA BRANCH"
+	#Gerar chave ssh pelo keygen
+	ssh-keygen -t rsa -b 2048
+	#Colocar uma nova URL
+	git remote set-url origin "URL"
+	#Baixar alterações do repositório GIT
+	git pull
+	

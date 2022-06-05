@@ -1,0 +1,119 @@
+Iniciando Docker.
+
+#Criando um container
+docker container run "CONTAINER"
+#Criando um container e dando nome a ele
+docker container run --name "NOME DO CONTAINER" "CONTAINER"
+#Listar container's em execução
+docker container ls
+#Listar container's que não estão em execução
+docker container ls -a
+#Remover um container por nome ou ID
+docker container rm "NOME DO CONTAINER" ou "ID"
+#Criar container em modo interativo (comunicação via terminal)
+docker container run -it "NOME DO CONTAINER" /bin/bash
+#Parar um container
+docker container rm -f "ID" ou "NOME DO CONTAINER"
+#Criar container em background para que possa ser utilizado o mesmo terminal
+docker container run -d --name "NOMDE DO CONTAINER" "CONTAINER"
+#Configuração de variaveis dentro do container (Procurar na documentação do dockerhub https://hub.docker.com/)
+#OBS (Pode ser colocado no comando mais de uma variavel)
+docker container run -d -e "VARIAVEL" "CONTAINER"
+#Criar contianer em background definindo as variaveis (Exemplo nome e senha de um banco de dados) e direcionando portas
+docker container run -d -e "VARIAVEL" -p "PORTA DO CONTAINER":"PORTA LOCAL" "CONTAINER"
+#Para criar uma imagem do seu projeto e preciso criar o arquivo "Dockerfile" (cada imagem é criada de acordo com sua linguagem)
+#EX:
+
+FROM node ---Criar a imagem com base em uma pré-existente
+WORKDIR /app ---Diretorio de trabalho
+COPY package*.json ./ ---Baixando as dependências do projeto
+RUN npm install ---
+COPY . . ---Copiando os outros elementos do projeto
+CMD ["node", "app.js"] ---Executando o projeto
+
+#FROM -> Inicializa o build de uma imagem a partir de uma imagem base
+#RUN -> Executa um comando
+#LABEL -> Adiciona metadados a imagem
+CMD -> Define o container e/ou os parâmetros padrão
+EXPOSE -> Define que o container precisa expor a porta em questão
+ARG -> Define um argumento pra ser usado no processo de contrução
+ENV -> Define variáveis de ambiente
+ADD -> Copia arquivos ou diretórios ou arquivos remotos e adiciona ao sistema de arquivos da imagem
+COPY -> Copia arquivos ou diretórios e adiciona ao sistema de arquivos da imagem
+ENTRYPOINT -> Ajuda você a configurar um contêiner que pode ser executado como um executavel
+VOLUME -> Define volumes que devem ser definidos
+WORKDIR -> Define o seu diretório corrente
+
+#Executar criação da imagem
+docker build -t "NOME DA IMAGEM" .
+#Executar criação da imagem sem cached
+docker build -t "NOME DA IMAGEM" . --no-cache
+#Listar imagens
+docker image ls
+#Remover imagem
+docker image rm "ID"
+#Subir imagem para o "Dockerhub" para que não seja preciso eu executar o build toda vez
+docker build -t "NOME PADRÃO exemplo: bobyxd/api-produto":"VERSÃO" .
+#Registrar docker ID na maquina
+docker login
+#Remover docker ID da maquina
+docker logout
+#Mudar a TAG no Dockerhub para latest (Boa Pratica)
+docker tag "NOME DA IMAGEM":"VERSÃO "NOME DA IMAGEM":latest
+#Limpar imagens não utilizadas
+docker image prune
+#Criar conexão entre os container's
+docker network create "NOME DO NETWORK"
+#Listar os docker's network
+docker network ls
+#Criando o container passando a network "BANCO"
+#Exemplo:
+docker container run --name mongodb -d --network api-network -e MONGO_INITDB_ROOT_USERNAME=teste -e MONGO_INITDB_ROOT_PASSWORD=123 -p 27017:27017 mongo
+#Criando o container passando a network "API"
+#Exemplo:
+docker container run -d -p 8080:8080 -e MONGODB_URI=mongodb://teste:123@mongodb:27017/admin --network api-network bobyxd/api-produto:v1
+#Criar container do banco trabalhando com volume para que não tenha perca dos dados pesistidos no banco
+#Exeplo:
+docker container run --name mongodb -d --network api-network -e MONGO_INITDB_ROOT_USERNAME=teste -e MONGO_INITDB_ROOT_PASSWORD=123 -p 27017:27017 -v "$(pwd)/mongodb:/data/db" mongo
+#Criando volume gerenciado pelo docker
+#Exemplo:
+docker container run --name mongodb -d --network api-network -e MONGO_INITDB_ROOT_USERNAME=teste -e MONGO_INITDB_ROOT_PASSWORD=123 -p 27017:27017 -v "mongo_vol:/data/db" mongo
+#Listar volume gerenciado pelo docker
+docker volume ls
+#Criar container`s pelo compose
+#Arquivo docker-compose.yaml
+#Conteudo exemplo
+
+version: '3.8'
+
+networks:
+  api-network:
+    driver: bridge
+
+volumes:
+  mongo-volume:
+
+services:
+  api:
+    image: bobyxd/api-produto:v1
+    ports:
+      - 8080:8080
+    networks:
+      - api-network
+    environment:
+      MONGO_URI: mongodb://teste:123@mongodb:27017/admin
+
+mongodb:
+  image: mongo
+  volumes:
+    - mongo-volume:/data/db
+  networks:
+    - api-network
+  environment:
+    MONGO_INITDB_ROOT_USERNAME: teste
+    MONGO_INITDB_ROOT_PASSWORD: 123
+    
+#Agora para criar execute
+docker-compose up    
+      
+      
